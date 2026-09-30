@@ -1,0 +1,22 @@
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+
+# 打包产物（含私钥，禁止提交）
+dist/
+_build/
+*.crx
+*.pem
+
+# Playwright 临时文件
+.playwright-cli/

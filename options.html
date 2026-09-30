@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>英译中助手 · 设置</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>英译中助手</h1>
+      <p class="sub">当前引擎：<b id="engineLabel">免费（腾讯+有道）</b>。想要更准的译文，推荐切换到 DeepSeek 或百度。</p>
+    </header>
+
+    <section>
+      <h2>翻译引擎</h2>
+      <div class="engine-list">
+        <label class="engine">
+          <input type="radio" name="engine" value="free" />
+          <div class="engine-body">
+            <span class="engine-name">免费引擎（腾讯 + 有道）</span>
+            <small>免注册免 Key，开箱即用；质量一般，适合日常浏览。</small>
+          </div>
+        </label>
+
+        <label class="engine">
+          <input type="radio" name="engine" value="deepseek" />
+          <div class="engine-body">
+            <span class="engine-name">DeepSeek（推荐，质量最佳）</span>
+            <small>大模型语义翻译，长难句、技术文档明显更准；需 API Key，价格极低（约 ¥1/百万字）。<a href="https://platform.deepseek.com/api_keys" target="_blank">获取 Key →</a></small>
+          </div>
+        </label>
+
+        <label class="engine">
+          <input type="radio" name="engine" value="baidu" />
+          <div class="engine-body">
+            <span class="engine-name">百度翻译开放平台</span>
+            <small>传统机翻引擎中质量较好、稳定；标准版免费（QPS 限制 1）。<a href="https://fanyi-api.baidu.com/" target="_blank">注册获取 →</a></small>
+          </div>
+        </label>
+      </div>
+
+      <div id="deepseekFields" class="engine-fields" hidden>
+        <label class="field">
+          <span>DeepSeek API Key</span>
+          <input id="deepseekKey" type="password" placeholder="sk-..." autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>模型</span>
+          <select id="deepseekModel">
+            <option value="deepseek-chat">deepseek-chat（V3，推荐）</option>
+            <option value="deepseek-reasoner">deepseek-reasoner（R1，更准但更慢）</option>
+          </select>
+        </label>
+        <div class="test-row">
+          <button id="testDeepseek" class="ghost" type="button">测试连通</button>
+          <span id="testDeepseekStatus" class="test-status" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <div id="baiduFields" class="engine-fields" hidden>
+        <label class="field">
+          <span>APPID</span>
+          <input id="baiduAppid" type="text" placeholder="20240xxxx" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>密钥</span>
+          <input id="baiduSecret" type="password" placeholder="在百度控制台查看" autocomplete="off" />
+        </label>
+        <div class="test-row">
+          <button id="testBaidu" class="ghost" type="button">测试连通</button>
+          <span id="testBaiduStatus" class="test-status" aria-live="polite"></span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>通用</h2>
+      <label class="field">
+        <span>每页最多翻译段落数</span>
+        <input id="maxBlocks" type="number" min="20" max="500" step="10" />
+        <small>减少段数可降低字符消耗与等待时间。</small>
+      </label>
+
+      <label class="field row">
+        <input id="floatOnSelect" type="checkbox" />
+        <span>选中文字时显示「译」浮按钮</span>
+      </label>
+    </section>
+
+    <section class="actions">
+      <button id="save" class="primary">保存</button>
+      <button id="reset" class="ghost">恢复默认</button>
+      <span id="status" class="status" aria-live="polite"></span>
+    </section>
+
+    <section class="about">
+      <h2>使用方法</h2>
+      <ul>
+        <li><kbd>Alt</kbd>+<kbd>T</kbd>：翻译当前选中文字</li>
+        <li><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>：翻译当前页面正文</li>
+        <li>选中文字后右键 → 「翻译选中的英文」</li>
+        <li>点击工具栏图标可手动输入翻译</li>
+      </ul>
+      <h2>常见问题</h2>
+      <details>
+        <summary>翻译结果有时不准，如何提升？</summary>
+        <p>免费引擎（腾讯 TransMart / 有道）是网页版接口，质量为基础机翻水平。切换到 DeepSeek（大模型，语义理解最佳）或百度（传统机翻中较优）可显著提升准确度，只需在上方填入对应 Key。</p>
+      </details>
+      <details>
+        <summary>为什么有些页面无法整页翻译？</summary>
+        <p>Chrome 扩展无法翻译 <code>chrome://</code>、Chrome Web Store、以及部分禁止注入脚本的网页。</p>
+      </details>
+    </section>
+  </main>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

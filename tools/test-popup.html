@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ET Popup Test</title>
+<style>
+  body { font: 16px/1.6 sans-serif; max-width: 600px; margin: 40px auto; }
+  .para { padding: 10px; }
+</style>
+</head>
+<body>
+<p class="para" id="target">A rootless Android app that boots Alpine Linux to run containers and GUI desktop apps.</p>
+
+<script>
+// ---- stub 掉 chrome.* API，模拟翻译成功 ----
+window.chrome = {
+  runtime: {
+    sendMessage: async (msg) => ({ ok: true, result: "【模拟译文】" + msg.text }),
+    onMessage: { addListener: () => {} }
+  },
+  storage: {
+    sync: { get: (k, cb) => cb({}), },
+    onChanged: { addListener: () => {} }
+  }
+};
+</script>
+<script>
+// ====== 以下为 content.js 的原文（划词浮按钮部分），与扩展中逻辑一致 ======
+(() => {
+  if (window.__ET_LOADED__) return;
+  window.__ET_LOADED__ = true;
+
+  let floatBtn = null;
+  let floatEnabled = true;
+
+  document.addEventListener("mouseup", () => {
+    if (!floatEnabled) return;
+    scheduleFloatBtn();
+  });
+  document.addEventListener("mousedown", (e) => {
+    if (floatBtn && !floatBtn.contains(e.target)) removeFloatBtn();
+  });
+  document.addEventListener("keyup", () => {
+    if (!floatEnabled) return;
+    scheduleFloatBtn();
+  });
+
+  function scheduleFloatBtn() {
+    removeFloatBtn();
+    setTimeout(maybeShowFloatBtn, 10);
+  }
+
+  function maybeShowFloatBtn() {
+    const sel = window.getSelection?.();
+    if (!sel || sel.isCollapsed) return;
+    const text = sel.toString().trim();
+    if (!text || text.length > 500) return;
+    const range = sel.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    if (!rect.width && !rect.height) return;
+
+    floatBtn = document.createElement("button");
+    floatBtn.id = "__et_float_btn__";
+    floatBtn.textContent = "译";
+    floatBtn.style.cssText = "position:absolute;z-index:2147483647;background:#2563eb;color:#fff;border:0;border-radius:6px;padding:2px 8px;font:12px/1.6 system-ui,sans-serif;cursor:pointer;";
+    floatBtn.style.top = `${window.scrollY + rect.top - 26}px`;
+    floatBtn.style.left = `${window.scrollX + rect.right + 4}px`;
+
+    const startTranslate = async () => {
+      const selected = text;
+      const anchorRect = { top: rect.top, left: rect.left, right: rect.right, bottom: rect.bottom };
+      removeFloatBtn();
+      showFloatingResult(selected, "⏳ ...", anchorRect);
+      try {
+        const resp = await chrome.runtime.sendMessage({ type: "content-translate-text", text: selected });
+        if (!resp?.ok) throw new Error(resp?.error || "fail");
+        showFloatingResult(selected, resp.result, anchorRect);
+      } catch (err) {
+        showFloatingResult(selected, "✗ " + err.message, anchorRect);
+      }
+    };
+
+    floatBtn.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      startTranslate();
+    });
+    floatBtn.addEventListener("mouseup", (e) => { e.preventDefault(); e.stopPropagation(); });
+    floatBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); });
+    document.body.appendChild(floatBtn);
+  }
+
+  function removeFloatBtn() { floatBtn?.remove(); floatBtn = null; }
+
+  function showFloatingResult(original, translated, anchorRect = null) {
+    document.querySelectorAll(".__et_float__").forEach((n) => n.remove());
+    const box = document.createElement("div");
+    box.className = "__et_float__";
+    box.innerHTML = `<div class="et-result"></div>`;
+    box.querySelector(".et-result").textContent = translated;
+    box.style.position = "fixed";
+    box.style.background = "#fff";
+    box.style.border = "1px solid #ccc";
+    box.style.padding = "8px";
+    box.style.visibility = "hidden";
+    document.body.appendChild(box);
+    const bw = box.offsetWidth, bh = box.offsetHeight;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    let top, left;
+    if (anchorRect) {
+      top = anchorRect.bottom + 8;
+      left = anchorRect.left;
+      if (top + bh > vh - 8) top = Math.max(8, anchorRect.top - bh - 8);
+      if (left + bw > vw - 8) left = Math.max(8, vw - bw - 8);
+    } else {
+      top = Math.max(8, (vh - bh) / 2);
+      left = Math.max(8, (vw - bw) / 2);
+    }
+    box.style.top = `${top}px`;
+    box.style.left = `${left}px`;
+    box.style.visibility = "visible";
+  }
+})();
+</script>
+</body>
+</html>

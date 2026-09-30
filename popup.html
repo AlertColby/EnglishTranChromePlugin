@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>英译中助手</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="bar">
+    <h1>英译中助手</h1>
+    <button id="btn-options" class="icon-btn" title="设置" aria-label="设置">⚙</button>
+  </header>
+
+  <section class="quick">
+    <button id="btn-page" class="primary">翻译当前页面正文</button>
+    <button id="btn-selection" class="secondary">翻译选中文本</button>
+  </section>
+
+  <section class="input">
+    <label for="src">输入英文（≤ 480 字）</label>
+    <textarea id="src" rows="4" placeholder="粘贴或输入英文..."></textarea>
+    <div class="row">
+      <button id="btn-translate" class="primary">翻译</button>
+      <button id="btn-clear" class="ghost">清空</button>
+    </div>
+  </section>
+
+  <section class="output">
+    <label>译文</label>
+    <div id="dst" class="dst" placeholder="译文会显示在这里..."></div>
+    <div class="row end">
+      <button id="btn-copy" class="ghost" disabled>复制</button>
+    </div>
+    <div id="status" class="status" aria-live="polite"></div>
+  </section>
+
+  <footer class="hint">
+    <div id="engineBadge">引擎：…</div>
+    快捷键：<kbd>Alt</kbd>+<kbd>T</kbd> 翻译选区 · <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> 翻译页面
+  </footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
